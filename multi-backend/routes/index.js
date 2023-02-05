@@ -15,5 +15,16 @@ router.get('/', async function(req, res, next) {
   }
 });
 
+/* GET home page. */
+router.get('/users/:id', async function(req, res, next) {
+  try {
+    let data = await userService.findById(req.params.id); 
+    res.send(data);
+  } catch (err) {
+      console.error(`Errore durante l'estrazione degli utenti da db: `, err.message);
+      next(err);
+  }
+});
+
 
 module.exports = router;

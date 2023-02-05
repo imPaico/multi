@@ -1,7 +1,7 @@
 const userRepository = require('../repository/userRepository');
 
 /**
- * estrae gli utenti da db
+ * estrae tutti gli utenti da db
  */
 getUsers = async (npages) => {
     let data = await userRepository.getUsers(npages);
@@ -14,18 +14,9 @@ getUsers = async (npages) => {
  * @param {*} id 
  * @returns 
  */
-findById = (id) => {
-    var users = [
-        {
-            id: '1',
-            name: 'Andrea'
-        },
-        {
-            id: '2',
-            name: 'PJ'
-        }
-    ]
-    return users.find(user => user.id == id);
+findById = async (id) => {
+    let data = await userRepository.findUserById(id);
+    return data
 }
 
 module.exports = {
