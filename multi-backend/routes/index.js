@@ -4,7 +4,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', async function(req, res, next) {
-  try {
+  /* try {
     //res.json(await userRepository.getUsers(1));
     let data = await userService.getUsers(1); 
     console.log('index.js - data extracted: ' + data);
@@ -12,7 +12,14 @@ router.get('/', async function(req, res, next) {
   } catch (err) {
       console.error(`Errore durante l'estrazione degli utenti da db: `, err.message);
       next(err);
-  }
+  } */
+  //res.render('index', {title: "App1, CSRF Demo", csrfToken: req.csrfToken()})
+  res.redirect('/login');
+});
+
+/* GET home page. */
+router.get('/home', async function(req, res, next) {
+  res.render('home page! Logged in')
 });
 
 /* GET home page. */
@@ -25,6 +32,7 @@ router.get('/users/:id', async function(req, res, next) {
       next(err);
   }
 });
+
 
 
 module.exports = router;

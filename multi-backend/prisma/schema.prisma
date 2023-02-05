@@ -10,4 +10,7 @@ datasource db {
 model user {
   id_user Int     @id @default(autoincrement())
   name    String? @db.VarChar(200)
+  email    String? @db.VarChar(200)
+  password    Bytes? @db.Blob
+  salt        String? @db.VarChar(45)
 }
