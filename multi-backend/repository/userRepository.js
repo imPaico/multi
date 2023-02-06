@@ -26,14 +26,13 @@ async function findUserById(id){
   }
 }
 
-async function findUserEmailAndPassword(email, password){
-  let _id = parseInt(id);
+async function findUserEmailAndPassword(email, password) {
   try {
       const prisma = new PrismaClient();
       const results = await prisma.user.findUnique({
         where: {
-          email: email,
-          password: password
+          email: email/* ,
+          password: password */
         },
       });
       return results;
@@ -48,7 +47,8 @@ async function saveUser(user) {
     const createdUser = await prisma.user.create({
       data: {
         email: user.email,
-        password: user.password
+        password: user.password,
+        salt: user.salt
       },
     })
     console.log('userRepository - user saved:' + createdUser)

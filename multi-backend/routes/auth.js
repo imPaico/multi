@@ -16,26 +16,26 @@ var userRepository = require('../repository/userRepository');
  * the hashed password stored in the database.  If the comparison succeeds, the
  * user is authenticated; otherwise, not.
  */
-passport.use(new LocalStrategy(async function verify(email, password, cb) {
-    try {
-        let data = await userRepository.findUserEmailAndPassword(email, password); 
-        console.log('auth - passport verfication - data extracted: ' + data);
-        if (data == null) {
-            cb(err);
-        }
-
-        crypto.pbkdf2(password, null, 310000, 32, 'sha256', function(err, hashedPassword) {
-            if (err) { return cb(err); }
-            if (!crypto.timingSafeEqual(data.hashed_password, hashedPassword)) {
-              return cb(null, false, { message: 'Incorrect username or password.' });
+passport.use(new LocalStrategy({usernameField: "email"},
+    async function verify(email, password, done) {
+        try {
+            let data = await userRepository.findUserEmailAndPassword(email, password); 
+            console.log(`auth - passport verfication - data extracted: ${data.email}`);
+            if (data == null) {
+                done(err);
             }
-            console.log('auth - passport verfication success! -  ' + data);
-            return cb(null, data);
-          });
-    } catch (err) {
-        console.error(`Errore durante l'estrazione degli utenti da db: `, err.message);
-        next(err);
-    }
+            crypto.pbkdf2(password, data.salt, 310000, 32, 'sha256', function(err, hashedPassword) {
+                if (err) { return cb(err); }
+                if (!crypto.timingSafeEqual(data.password, hashedPassword)) {
+                return done(null, false, { message: 'Incorrect username or password.' });
+                }
+                console.log('auth - passport verfication success! -  ' + data);
+                return done(null, data);
+            });
+        } catch (err) {
+            console.error(`Errore durante l'estrazione degli utenti da db: `, err.message);
+            done(null, false, {message: err.message});
+        }
 }));
 
 /* Configure session management.
@@ -61,7 +61,7 @@ passport.serializeUser(function(user, cb) {
   });
   
 passport.deserializeUser(function(user, cb) {
-    console.log(`deserializing user: ${user}`);
+    console.log(`deserializing user: ${user.email}, ${user.password}`);
     process.nextTick(function() {
         return cb(null, user);
     });
@@ -71,7 +71,10 @@ passport.deserializeUser(function(user, cb) {
 router.get('/login', async function(req, res, next) {
     try {
       //res.json(await userRepository.getUsers(1)); 
-      res.send('Hello world! this is the csrfToken needed: ' + req.csrfToken());
+      res.send({
+        message: 'Home page!',
+        csrfToken: req.csrfToken()
+    });
     } catch (err) {
         console.error(`Errore durante l'estrazione degli utenti da db: `, err.message);
         next(err);
@@ -122,12 +125,12 @@ router.post('/logout', function(req, res, next) {
  */
 router.post('/signup', function(req, res, next) {
     var salt = crypto.randomBytes(16);
-    console.log('password: '+ req.body.password);
-    console.log('email: '+ req.body.email);
+    console.log (`Signup method: ${req.body.email} - ${req.body.password} - ${salt}`)
     crypto.pbkdf2(req.body.password, salt, 310000, 32, 'sha256', function(err, hashedPassword) {
         if (err) {
             next(err);
         }
+        console.log(`hashed password: ${hashedPassword} - ${salt}`)
         const createdUser = userRepository.saveUser({
             email: req.body.email,
             password: hashedPassword,
@@ -143,5 +146,9 @@ router.post('/signup', function(req, res, next) {
     });
 });
 
+/* GET home page. */
+router.get('/home', function(req, res, next) {
+    res.send('home page! Logged in')
+});
 
 module.exports = router;

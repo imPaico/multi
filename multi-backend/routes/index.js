@@ -18,11 +18,6 @@ router.get('/', async function(req, res, next) {
 });
 
 /* GET home page. */
-router.get('/home', async function(req, res, next) {
-  res.render('home page! Logged in')
-});
-
-/* GET home page. */
 router.get('/users/:id', async function(req, res, next) {
   try {
     let data = await userService.findById(req.params.id); 
@@ -32,7 +27,5 @@ router.get('/users/:id', async function(req, res, next) {
       next(err);
   }
 });
-
-
 
 module.exports = router;
