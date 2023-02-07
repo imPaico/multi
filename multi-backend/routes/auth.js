@@ -14,10 +14,10 @@ initializePassport(async function verify(email, password, done) {
         let data = await userRepository.findUserEmailAndPassword(email, password); 
         console.log(`auth - passport verfication - data extracted: ${data.email}`);
         if (data == null) {
-            done(err);
+            done(null, false, {message: 'No user with that email'});
         }
         crypto.pbkdf2(password, data.salt, 310000, 32, 'sha256', function(err, hashedPassword) {
-            if (err) { return cb(err); }
+            if (err) { return done(null, false, {message: err.message}); }
             if (!crypto.timingSafeEqual(data.password, hashedPassword)) {
             return done(null, false, { message: 'Incorrect username or password.' });
             }
@@ -31,10 +31,10 @@ initializePassport(async function verify(email, password, done) {
 });
 
 /* GET login. */
-router.get('/login', async function(req, res, next) {
+router.get('/login', checkNotAuthenticated, async function(req, res, next) {
     try {
       res.send({
-        message: 'Home page!',
+        message: 'Login page!',
         csrfToken: req.csrfToken()
     });
     } catch (err) {
@@ -59,7 +59,7 @@ router.get('/login', async function(req, res, next) {
  * When authentication fails, the user will be re-prompted to login and shown
  * a message informing them of what went wrong.
  */
-router.post('/login/password', passport.authenticate('local', {
+router.post('/login', checkNotAuthenticated, passport.authenticate('local', {
     successReturnToOrRedirect: '/home',
     failureRedirect: '/login',
     failureMessage: true
@@ -85,7 +85,7 @@ router.post('/logout', function(req, res, next) {
  * then a new user record is inserted into the database.  If the record is
  * successfully created, the user is logged in.
  */
-router.post('/signup', function(req, res, next) {
+router.post('/signup', checkNotAuthenticated, function(req, res, next) {
     var salt = crypto.randomBytes(16);
     console.log (`Signup method: ${req.body.email} - ${req.body.password} - ${salt}`)
     crypto.pbkdf2(req.body.password, salt, 310000, 32, 'sha256', function(err, hashedPassword) {
@@ -118,5 +118,11 @@ router.get('/application', function(req, res, next) {
     res.send('application page!')
 });
 
+function checkNotAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        res.redirect('/')
+    }
+    next()
+}
 
 module.exports = router;

@@ -31,17 +31,16 @@ var initializePassport = function(verify) {
     * fetch todo records and render the user element in the navigation bar, that
     * information is stored in the session.
     */
-    passport.serializeUser(function(user, cb) {
+    passport.serializeUser(function(user, done) {
         process.nextTick(function() {
-            console.log(`serializing user: ${user.email}`);
-            cb(null, {email: user.email });
+            done(null, {email: user.email });
         });
     });
 
-    passport.deserializeUser(function(user, cb) {
+    passport.deserializeUser(function(user, done) {
         console.log(`deserializing user: ${user.email}`);
         process.nextTick(function() {
-            return cb(null, user);
+            return done(null, user);
         });
     });
 }
