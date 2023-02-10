@@ -1,10 +1,8 @@
-CREATE DATABASE  IF NOT EXISTS `multi-database` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `multi-database`;
--- MySQL dump 10.13  Distrib 8.0.32, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.23, for Win64 (x86_64)
 --
 -- Host: localhost    Database: multi-database
 -- ------------------------------------------------------
--- Server version	8.0.32
+-- Server version	8.0.23
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -27,8 +25,12 @@ DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id_user` int NOT NULL AUTO_INCREMENT,
   `name` varchar(200) DEFAULT NULL,
-  PRIMARY KEY (`id_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `password` tinyblob,
+  `email` varchar(200) DEFAULT NULL,
+  `salt` tinyblob,
+  PRIMARY KEY (`id_user`),
+  UNIQUE KEY `email_UNIQUE` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -37,7 +39,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'Andrea'),(2,'PJ');
+INSERT INTO `user` VALUES (10,NULL,_binary 'ZÇ|_fÍ§ÖCëˆYè•⁄ºœºBuH\Ï©.r\Ôõ\n|ê','test@test.com',_binary '@\Í\ﬁl=8\\ÛQU&µø\Ì'),(11,NULL,_binary 'ÛZ–Å…ò\Àb¶—øà:\·f\«ÄLßÒn´w˘(^O ','test@test1.com',_binary '†Œåû\Â?,\‘L)\Ë	\ƒiE');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -50,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-02-05 15:14:54
+-- Dump completed on 2023-02-10  7:35:58

@@ -52,13 +52,11 @@ app.use(function(req, res, next) {
 });
 
 app.use(function(req, res, next) {
-  console.log('csrf token: ' + req.csrfToken());
   res.locals.csrfToken = req.csrfToken();
   next();
 });
 
 app.use('/', indexRouter);
-app.use('/', authRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
